@@ -1,7 +1,32 @@
 {
   "reviews": [],
   "users": [],
-  "rides": [],
+  "rides": [
+    {
+      "id": 1778519762029,
+      "pickup": "Imam University",
+      "dropoff": "Library",
+      "driverName": "Ahmed Massaud",
+      "driverCar": "Toyota Camry",
+      "driverPlate": "R12345",
+      "fare": 12.5,
+      "status": "Cancelled",
+      "createdAt": "2026-05-11T17:16:02.029Z",
+      "cancelledAt": "2026-05-11T17:18:56.766Z"
+    },
+    {
+      "id": 1778519931070,
+      "pickup": "Imam University",
+      "dropoff": "Library",
+      "driverName": "Ahmed Massaud",
+      "driverCar": "Toyota Camry",
+      "driverPlate": "R12345",
+      "fare": 12.5,
+      "status": "Cancelled",
+      "createdAt": "2026-05-11T17:18:51.070Z",
+      "cancelledAt": "2026-05-11T17:19:00.046Z"
+    }
+  ],
   "emergencies": [],
   "contacts": [],
   "splitBills": [],

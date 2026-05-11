@@ -1,143 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Past Rides</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: #e0f7fa;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #0277bd;
-            margin-bottom: 30px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        th, td {
-            padding: 14px;
-            text-align: left;
-        }
-        th {
-            background-color: #81d4fa;
-            color: #01579b;
-        }
-        tr:nth-child(even) {
-            background-color: #e1f5fe;
-        }
-        tr:hover {
-            background-color: #b3e5fc;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        .cancel-ride-btn {
-    padding: 8px 12px;
-    background-color: #d32f2f;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
+  <title>Past Rides</title>
 
-.cancel-ride-btn:hover {
-    background-color: #9a0007;
-}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
 
-.cancel-ride-btn:disabled {
-    background-color: #999;
-    cursor: not-allowed;
-}
-    </style>
+  <style>
+    body {
+      font-family: "Roboto", sans-serif;
+      background: #e0f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #0277bd;
+      margin-bottom: 30px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #0277bd;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 14px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #81d4fa;
+      color: #01579b;
+    }
+
+    tr:nth-child(even) {
+      background-color: #e1f5fe;
+    }
+
+    tr:hover {
+      background-color: #b3e5fc;
+    }
+
+    .cancel-ride-btn {
+      padding: 8px 12px;
+      background-color: #d32f2f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .cancel-ride-btn:hover {
+      background-color: #9a0007;
+    }
+
+    .cancel-ride-btn:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+    .status-confirmed {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-cancelled {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .message {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 700px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Past Rides</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Driver</th>
-<th>Status</th>
-<th>Action</th>                </tr>
-            </thead>
-            <tbody>
-                <tr>
-               <tbody id="historyBody">
-</tbody>
-            </tbody>
-        </table>
-    </div>
-    <script>
-    function displayRideHistory() {
-        const historyBody = document.getElementById("historyBody");
-        const ride = JSON.parse(localStorage.getItem("lastRide"));
+  <div class="container">
+    <a href="orderCar.html" class="back-link">← Back to Order Car</a>
 
-        if (!ride) {
-            historyBody.innerHTML = `
-                <tr>
-                    <td colspan="6" style="text-align:center;">No rides yet.</td>
-                </tr>
-            `;
-            return;
-        }
+    <h1>Past Rides</h1>
 
-        const rideDate = ride.createdAt 
-            ? new Date(ride.createdAt).toLocaleDateString()
-            : "Today";
+    <p id="message" class="message"></p>
 
-        const isCancelled = ride.status === "Cancelled";
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Driver</th>
+          <th>Fare</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
 
-        historyBody.innerHTML = `
+      <tbody id="historyBody">
+        <tr>
+          <td colspan="7" style="text-align:center;">Loading rides...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:3000/api/rides";
+
+    async function loadRideHistory() {
+      const historyBody = document.getElementById("historyBody");
+      const message = document.getElementById("message");
+
+      try {
+        const response = await fetch(API_URL);
+        const rides = await response.json();
+
+        historyBody.innerHTML = "";
+
+        if (!rides || rides.length === 0) {
+          historyBody.innerHTML = `
             <tr>
-                <td>${rideDate}</td>
-                <td>${ride.pickup}</td>
-                <td>${ride.dropoff}</td>
-                <td>${ride.driverName}</td>
-                <td>${ride.status}</td>
-                <td>
-                    <button class="cancel-ride-btn" onclick="cancelRide()" ${isCancelled ? "disabled" : ""}>
-                        ${isCancelled ? "Cancelled" : "Cancel Ride"}
-                    </button>
-                </td>
+              <td colspan="7" style="text-align:center;">No rides yet.</td>
             </tr>
-        `;
-    }
-
-    function cancelRide() {
-        const ride = JSON.parse(localStorage.getItem("lastRide"));
-
-        if (!ride) {
-            alert("No ride found.");
-            return;
+          `;
+          return;
         }
 
-        ride.status = "Cancelled";
-        localStorage.setItem("lastRide", JSON.stringify(ride));
+        rides
+          .slice()
+          .reverse()
+          .forEach((ride) => {
+            const rideDate = ride.createdAt
+              ? new Date(ride.createdAt).toLocaleString()
+              : "Unknown";
 
-        displayRideHistory();
+            const isCancelled = ride.status === "Cancelled";
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+              <td>${rideDate}</td>
+              <td>${ride.pickup || "-"}</td>
+              <td>${ride.dropoff || "-"}</td>
+              <td>${ride.driverName || "-"}</td>
+              <td>${ride.fare ? "$" + Number(ride.fare).toFixed(2) : "-"}</td>
+              <td class="${isCancelled ? "status-cancelled" : "status-confirmed"}">
+                ${ride.status || "Confirmed"}
+              </td>
+              <td>
+                <button 
+                  class="cancel-ride-btn"
+                  onclick="cancelRide(${ride.id})"
+                  ${isCancelled ? "disabled" : ""}
+                >
+                  ${isCancelled ? "Cancelled" : "Cancel Ride"}
+                </button>
+              </td>
+            `;
+
+            historyBody.appendChild(row);
+          });
+
+        message.textContent = "";
+      } catch (error) {
+        historyBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align:center; color:red;">
+              Could not load rides. Make sure the backend server is running.
+            </td>
+          </tr>
+        `;
+      }
     }
 
-    displayRideHistory();
-</script>
+    async function cancelRide(id) {
+      const message = document.getElementById("message");
+
+      const confirmCancel = confirm("Are you sure you want to cancel this ride?");
+
+      if (!confirmCancel) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${id}/cancel`, {
+          method: "PATCH"
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          message.style.color = "green";
+          message.textContent = "Ride cancelled successfully.";
+          loadRideHistory();
+        } else {
+          message.style.color = "red";
+          message.textContent = data.message || "Could not cancel ride.";
+        }
+      } catch (error) {
+        message.style.color = "red";
+        message.textContent = "Server error. Could not cancel ride.";
+      }
+    }
+
+    loadRideHistory();
+  </script>
 </body>
 </html>
-

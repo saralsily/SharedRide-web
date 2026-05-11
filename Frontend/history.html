@@ -45,6 +45,25 @@
         tr:hover {
             background-color: #b3e5fc;
         }
+
+        .cancel-ride-btn {
+    padding: 8px 12px;
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cancel-ride-btn:hover {
+    background-color: #9a0007;
+}
+
+.cancel-ride-btn:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
     </style>
 </head>
 <body>
@@ -57,34 +76,68 @@
                     <th>From</th>
                     <th>To</th>
                     <th>Driver</th>
-                    <th>Fare</th>
-                </tr>
+<th>Status</th>
+<th>Action</th>                </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>2025-11-01</td>
-                    <td>Main Street</td>
-                    <td>Central Park</td>
-                    <td>Jane Smith</td>
-                    <td>$12.50</td>
-                </tr>
-                <tr>
-                    <td>2025-11-03</td>
-                    <td>City Mall</td>
-                    <td>Airport</td>
-                    <td>Mike Johnson</td>
-                    <td>$25.00</td>
-                </tr>
-                <tr>
-                    <td>2025-11-05</td>
-                    <td>Home</td>
-                    <td>University</td>
-                    <td>Sarah Lee</td>
-                    <td>$8.75</td>
-                </tr>
+               <tbody id="historyBody">
+</tbody>
             </tbody>
         </table>
     </div>
+    <script>
+    function displayRideHistory() {
+        const historyBody = document.getElementById("historyBody");
+        const ride = JSON.parse(localStorage.getItem("lastRide"));
+
+        if (!ride) {
+            historyBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center;">No rides yet.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        const rideDate = ride.createdAt 
+            ? new Date(ride.createdAt).toLocaleDateString()
+            : "Today";
+
+        const isCancelled = ride.status === "Cancelled";
+
+        historyBody.innerHTML = `
+            <tr>
+                <td>${rideDate}</td>
+                <td>${ride.pickup}</td>
+                <td>${ride.dropoff}</td>
+                <td>${ride.driverName}</td>
+                <td>${ride.status}</td>
+                <td>
+                    <button class="cancel-ride-btn" onclick="cancelRide()" ${isCancelled ? "disabled" : ""}>
+                        ${isCancelled ? "Cancelled" : "Cancel Ride"}
+                    </button>
+                </td>
+            </tr>
+        `;
+    }
+
+    function cancelRide() {
+        const ride = JSON.parse(localStorage.getItem("lastRide"));
+
+        if (!ride) {
+            alert("No ride found.");
+            return;
+        }
+
+        ride.status = "Cancelled";
+        localStorage.setItem("lastRide", JSON.stringify(ride));
+
+        displayRideHistory();
+    }
+
+    displayRideHistory();
+</script>
 </body>
 </html>
 

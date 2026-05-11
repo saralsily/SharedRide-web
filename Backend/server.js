@@ -276,6 +276,33 @@ app.post('/api/payments', async (req, res) => {
   }
 });
 
+app.post('/api/rides', (req, res) => {
+  const { pickup, dropoff, driverName, driverCar, driverPlate } = req.body;
+
+  if (!pickup || !dropoff) {
+    return res.status(400).json({
+      success: false,
+      message: 'Pickup and drop-off locations are required.'
+    });
+  }
+
+  const ride = {
+    id: Date.now(),
+    pickup,
+    dropoff,
+    driverName,
+    driverCar,
+    driverPlate,
+    status: 'Confirmed',
+    createdAt: new Date().toISOString()
+  };
+
+  res.json({
+    success: true,
+    message: 'Ride confirmed successfully.',
+    ride
+  });
+});
 server.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

@@ -31,21 +31,30 @@
     .form-group label { margin-bottom:5px; font-weight:bold; }
     .form-group input { padding:10px; border-radius:6px; border:1px solid #333; font-size:16px; }
 
-    .chat-with-driver, .split-pill, .cancel-btn {
-      padding:15px 40px;
-      font-size:18px;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      transition: background-color 0.3s;
-      margin-bottom:15px;
-    }
+.chat-with-driver, .split-pill, .cancel-btn, .confirm-ride-btn {
+  padding:15px 40px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  transition: background-color 0.3s;
+  margin-bottom:15px;
+}
 
     .chat-with-driver { background-color:#007bff; color:white; }
     .chat-with-driver:hover { background-color:#0056b3; }
 
     .split-pill { background-color:#28a745; color:white; }
     .split-pill:hover { background-color:#1e7e34; }
+
+    .confirm-ride-btn { 
+  background-color:#28a745; 
+  color:white; 
+}
+
+.confirm-ride-btn:hover { 
+  background-color:#1e7e34; 
+}
 
     .cancel-btn { background-color:#007bff; color:white; margin-left:10px; }
     .cancel-btn:hover { background-color:#0056b3; }
@@ -93,10 +102,14 @@
     <button class="chat-with-driver">Chat with Driver</button>
   </div>
   <!-- Split Pill / Cancel Buttons -->
-  <div style="display:flex; gap:10px; margin-bottom:20px;">
-    <button class="split-pill">View Bill</button>
-    <button class="cancel-btn">Cancel</button>
-  </div>
+  <!-- Ride Action Buttons -->
+<div style="display:flex; gap:10px; margin-bottom:20px;">
+  <button class="confirm-ride-btn">Confirm Ride</button>
+  <button class="split-pill">View Bill</button>
+  <button class="cancel-btn">Cancel</button>
+</div>
+
+<p id="ride-message" style="font-weight:bold; margin-bottom:20px;"></p>
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="../Backend/orderCar-backend.js"></script>
@@ -146,6 +159,54 @@
       if (dropoffMarker) map.removeLayer(dropoffMarker);
         dropoffMarker = L.marker([lat, lng]).addTo(map);
       });
+      document.querySelector(".confirm-ride-btn").addEventListener("click", async () => {
+  const pickup = document.getElementById("pickup").value.trim();
+  const dropoff = document.getElementById("dropoff").value.trim();
+  const message = document.getElementById("ride-message");
+
+  if (!pickup || !dropoff) {
+    message.style.color = "red";
+    message.textContent = "Please enter pickup and drop-off locations first.";
+    return;
+  }
+
+  const rideData = {
+    pickup: pickup,
+    dropoff: dropoff,
+    driverName: assignedDriver.name,
+    driverCar: assignedDriver.car,
+    driverPlate: assignedDriver.plate
+  };
+
+  try {
+    const response = await fetch("http://localhost:3000/api/rides", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(rideData)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      localStorage.setItem("lastRide", JSON.stringify(data.ride));
+
+      message.style.color = "green";
+      message.textContent = "Ride confirmed successfully. Redirecting to history...";
+
+      setTimeout(() => {
+        window.location.href = "history.html";
+      }, 1000);
+    } else {
+      message.style.color = "red";
+      message.textContent = data.message;
+    }
+  } catch (error) {
+    message.style.color = "red";
+    message.textContent = "Could not connect to the server. Make sure backend is running.";
+  }
+});
       document.querySelector(".chat-with-driver").addEventListener("click", () => {
         window.location.href = "chat-with-driver.html";
       });
